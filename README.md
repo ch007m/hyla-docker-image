@@ -1,20 +1,12 @@
-# Hyla - Ruby Docker Image
+# Hyla & Ruby Docker Image
 
 This Docker Image allows to provision a Docker container with Ruby 1.9, Hyla &amp; the gems required. It uses as Base OS Image __Fedora 21__
-
-# Developer
-
-If you would like to change the content definition of this image and generates a new docker image, here is the command to be used
-
-    docker build -rm -t your-username/your-project .
-
-Remark : Do not forget to fork the project in that case.
 
 # Technical Writer
 
 ## Prerequisite
 
-- Install the Docker server and client on your machine ([MacOS»(https://docs.docker.com/installation/mac/), [Windows](https://docs.docker.com/installation/windows/), [Fedora](https://docs.docker.com/installation/fedora/), ...).
+- Install the Docker server and client on your machine ([MacOS](https://docs.docker.com/installation/mac/), [Windows](https://docs.docker.com/installation/windows/), [Fedora](https://docs.docker.com/installation/fedora/), ...).
 
 ## Procedure
 
@@ -43,3 +35,11 @@ Rendering : Asciidoctor Indexed Files to HTML
 ```
 
 Remark : The location of the styles can change according to the version of hyla deployed. So change ../hyla-1.0.6/.. to the version deployed to the variable of stylesdir.
+
+# Developer
+
+If you would like to change the content definition of this image and generates a new docker image, here is the command to be used
+
+    docker build -rm -t your-username/your-project .
+
+Remark : Do not forget to fork the project in that case.
