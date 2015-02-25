@@ -1,14 +1,11 @@
 # Dockerfile for a Hyla Ruby container.
 #
 # Provides an environment for running Hyla Ruby command line tool.
+# 
+
 
 #
-# FROM       fedora:20 
-# error: unpacking of archive failed on file /usr/bin/systemd-detect-virt: cpio: cap_set_file
-# error: systemd-208-30.fc20.x86_64: install failed
-#
-
-FROM         centos:7
+FROM       fedora:21
 MAINTAINER Charles Moulliard <ch007m@gmail.com>
 
 # Execute system update
@@ -20,9 +17,18 @@ RUN yum -y install \
     wget           \
     unzip          \
     tar            \
-    gcc            \
-    libtool        \
     make           \
+    libtool        \
+    gcc-c++        \
+    gcc            \
+    libssl-dev     \
+    openssl-devel  \
+    libyaml-devel  \
+    libffi-devel   \
+    readline-devel \
+    zlib-devel     \
+    gdbm-devel     \
+    ncurses-devel
     && yum clean all
 
 #
@@ -39,44 +45,52 @@ WORKDIR /home/default
 USER default
 
 #
+# Include files from local folder
+#
+ADD . /home/default/data
+
+#
 # Install Ruby RBENV & Ruby-Build to manage the Ruby version
 #
 RUN git clone https://github.com/sstephenson/rbenv.git ~/.rbenv
 
-RUN echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile
-RUN echo 'eval "$(rbenv init -)"' >> ~/.bash_profile
+RUN echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile; \
+    echo 'eval "$(rbenv init -)"' >> ~/.bash_profile
 
-ENV HOME /home/default
-ENV RBENV $HOME/.rbenv 
-ENV PATH $RBENV/bin:$PATH
+# 
+# Add Ruby, RBENV to the Path
+#
+ENV HOME          /home/default
+ENV RBENV         $HOME/.rbenv 
+ENV PATH          $RBENV/bin:$PATH
+ENV RUBY_VERSION  1.9.3-p484
+ENV PATH          $RBENV/versions/$RUBY_VERSION/bin:$PATH
 
-RUN mkdir -p ~/.rbenv/plugins/
-RUN git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
-
-RUN rbenv install 1.9.3-p484; rbenv global 1.9.3-p484
-
-# Ruby Path
-ENV RUBY_VERSION rbenv version-name
-ENV PATH         $RBENV/versions/$RUBY_VERSION/bin:$PATH"
+RUN mkdir -p ~/.rbenv/plugins/;                                                          \
+    git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build; \
+    rbenv install 1.9.3-p484;                                                            \
+    rbenv global 1.9.3-p484
 
 # 
 # Install Ruby Bundler & Pry
 #
-# RUN gem install bundler pry --no-rdoc --no-ri
+RUN gem install bundler pry --no-rdoc --no-ri
+
+#
+# Install Hyla gtom Gem Repo
+#
+RUN gem install hyla -v 1.0.6 --no-rdoc --no-ri
 
 # 
-# Git clone Hyla, unzip the file
+# ISSUE : GEM is not deployed
+# Git clone Hyla project, unzip the file, build the gem & install it
 #
-RUN mkdir -p /home/default/tmp; \
-    curl -sf -o /home/default/tmp/hyla-master.zip -L https://github.com/cmoulliard/hyla/archive/master.zip; \
-    cd /home/default/tmp/; \
-    unzip hyla-master.zip
-
-# 
-# Build Hyla & install it
-#
-RUN cd hyla-master;                  \
-    gem build hyla.gemspec
-
-#       ruby -e "Dir.glob('*.gem').each {|i| puts exec(\"sudo gem install #{i}\")}"
+#RUN  mkdir -p /home/default/tmp; \
+#     curl -sf -o /home/default/tmp/hyla-master.zip -L https://github.com/cmoulliard/hyla/archive/master.zip; \
+#     cd /home/default/tmp/;            \
+#     unzip hyla-master.zip;            \
+#     cd /home/default/tmp/hyla-master; \                             \
+#     ls -la /home/default/data;        \
+#     gem build hyla.gemspec;           \
+#     ruby -e "Dir.glob('*.gem').each {|i| puts exec(\"gem install #{i} --no-rdoc --no-ri\")}"
 
