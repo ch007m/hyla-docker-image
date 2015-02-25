@@ -12,9 +12,15 @@ Remark : Do not forget to fork the project in that case.
 
 # Technical Writer
 
-To launch the docker container and use the bash terminal to run the hyla commands, tun this command
+* Prerequisite
 
-    docker run -t -i cmoulliard/hyla-ruby bash
+- Install the Docker server and client on your machine ([MacOS»(https://docs.docker.com/installation/mac/), [Windows](https://docs.docker.com/installation/windows/), [Fedora](https://docs.docker.com/installation/fedora/), ...).
+
+* Procedure
+
+What you should do to use the __hyla ruby__ command line tool consists in starting a Docker container and pass as paramzter the bash function. That will tell to Docker to book a container created from the image definition and when the contaienr is started, a bash terminal will be launched. So run this command.
+
+    docker run -t -i cmoulliard/hyla-ruby bash   
 
 To mount the directory containing your project, use the -v option
 
