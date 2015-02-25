@@ -14,7 +14,7 @@ What you should do to use the __hyla ruby__ command line tool consists in starti
 
     docker run -t -i cmoulliard/hyla-ruby bash   
 
-To mount the directory containing your project, use the -v option
+To mount the directory containing your project, use the -v option. The first part of the value is your local path while the second (placed after the : character) is where it will be mounted into the Docker container.
 
 	docker run -t -i -v /path/on/your/machine/to/the/content:/home/default/content cmoulliard/hyla-ruby bash    
 
