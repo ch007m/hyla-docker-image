@@ -2,55 +2,81 @@
 #
 # Provides an environment for running Hyla Ruby command line tool.
 
-FROM       ubuntu:14.04
+#
+# FROM       fedora:20 
+# error: unpacking of archive failed on file /usr/bin/systemd-detect-virt: cpio: cap_set_file
+# error: systemd-208-30.fc20.x86_64: install failed
+#
+
+FROM         centos:7
 MAINTAINER Charles Moulliard <ch007m@gmail.com>
 
-# Update environement
-RUN apt-get update -qq -y
-RUN apt-get install -qq -y \
-    sudo                   \
-    git                    \
-    curl                   \
-    build-essential        \
-    autoconf               \
-    man                    \
-    libreadline-dev        \
-    libssl-dev             \
-    libxml2-dev            \
-    libxslt-dev            \
-    zlib1g-dev             \
-    libbz2-dev
+# Execute system update
+RUN yum -y update; yum clean all
 
-RUN useradd -m -s /bin/bash default
-RUN chgrp -R default /usr/local
-RUN find /usr/local -type d | xargs chmod g+w
+# Install packages necessary to deploy Ruby
+RUN yum -y install \
+    git            \
+    wget           \
+    unzip          \
+    tar            \
+    gcc            \
+    libtool        \
+    make           \
+    && yum clean all
 
-RUN echo "default ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/default
-RUN chmod 0440 /etc/sudoers.d/default
+#
+# Create a user and group used to launch processes
+# The user ID 1000 is the default for the first "regular" user on Fedora/RHEL,
+# so there is a high chance that this ID will be equal to the current user
+# making it easier to use volumes (no permission issues)
+#
+RUN groupadd -r default -g 1000 && useradd -u 1000 -r -g default -m -d /home/default -s /sbin/nologin -c "Default user" default    
 
-ENV     HOME /home/default
+# Set the working directory to default' user home directory
 WORKDIR /home/default
-USER    default
 
-# Install Ruby Build to manage the Ruby version
-ADD https://github.com/sstephenson/ruby-build/archive/v20140524.tar.gz /tmp/
+USER default
 
-RUN cd /tmp;                           \
-    sudo chown default: *.tar.gz;      \
-    tar xvzf *.tar.gz; rm -f *.tar.gz; \
-    cd ruby-build*;                    \
-    ./bin/ruby-build 1.9.3p484 /usr/local; \
-    cd; rm -rf /tmp/ruby-build*
+#
+# Install Ruby RBENV & Ruby-Build to manage the Ruby version
+#
+RUN git clone https://github.com/sstephenson/rbenv.git ~/.rbenv
 
-RUN gem install bundler pry --no-rdoc --no-ri
+RUN echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile
+RUN echo 'eval "$(rbenv init -)"' >> ~/.bash_profile
 
-# Git clone Hyla
-ADD https://github.com/cmoulliard/hyla/archive/master.zip /tmp/
+ENV HOME /home/default
+ENV RBENV $HOME/.rbenv 
+ENV PATH $RBENV/bin:$PATH
 
-RUN cd /tmp;                           \
-      sudo chown default: *.zip;       \ 
-      unzip *.zip; rm -rf *.gz;        \
-      cd hyla-master;                  \
-      gem build hyla.gemspec;          \
-      ruby -e "Dir.glob('*.gem').each {|i| puts exec(\"gem install #{i} -l\")}"
+RUN mkdir -p ~/.rbenv/plugins/
+RUN git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
+
+RUN rbenv install 1.9.3-p484; rbenv global 1.9.3-p484
+
+# Ruby Path
+ENV RUBY_VERSION rbenv version-name
+ENV PATH         $RBENV/versions/$RUBY_VERSION/bin:$PATH"
+
+# 
+# Install Ruby Bundler & Pry
+#
+# RUN gem install bundler pry --no-rdoc --no-ri
+
+# 
+# Git clone Hyla, unzip the file
+#
+RUN mkdir -p /home/default/tmp; \
+    curl -sf -o /home/default/tmp/hyla-master.zip -L https://github.com/cmoulliard/hyla/archive/master.zip; \
+    cd /home/default/tmp/; \
+    unzip hyla-master.zip
+
+# 
+# Build Hyla & install it
+#
+RUN cd hyla-master;                  \
+    gem build hyla.gemspec
+
+#       ruby -e "Dir.glob('*.gem').each {|i| puts exec(\"sudo gem install #{i}\")}"
 
