@@ -1,6 +1,33 @@
 # Hyla & Ruby Docker Image
 
-This Docker Image allows to provision a Docker container with Ruby 1.9, Hyla &amp; the gems required. It uses as Base OS Image __Fedora 21__
+This Docker Image uses as base OS Image __Fedora 21__ and allows to provision a Docker container with :
+
+* __Ruby__ 1.9.3
+* [Rbenv - Tool to manage the Ruby version installed](https://github.com/sstephenson/rbenv)
+* [Ruby-Build - Tool to install Ruby](https://github.com/sstephenson/ruby-build)
+* [Hyla - Asciidoctor Content Generator](https://github.com/cmoulliard/hyla)
+
+Hyla is a Ruby command line tool to create a new documentation/training/blog/static web site project, add artefacts (articles, blog, audio, video, content, code source, …), render it in HTML, SlideShow, … using asciidoc(tor) as markup language.
+
+Until now, hyla looks like asciidoctor client but is is more similar to Jekyll on the principle but here we support asciidoc, asciidoctor formats and not markdown.
+
+The tool allows to :
+
+* Generate slideshow presentations (deckJs, RevealJS) - https://twitter.com/cmoulliard/status/421587832159756288,
+* Setup a blank project,
+* Setup a project from template (book, training, training-exercises, documentation/training content, …
+* Create a documentation/training project (including directories + files) from a Table of Content
+* Generate a one HTML file (= sum of all the asciidoc files) for slideshow (or trainer presentation) using index files (= file containing links to include other files)
+* Render html content from asciidoc (http://asciidoctor.org/docs/user-manual)
+* Render html using different styles
+* Watch files (LiveReload - WebSocket) and render them if a modification has been detected or file added …
+
+It is not a replacement or a concurrent of awestruct. Idea is to package in hyla css styles, backends, samples (article, image, table, audio, video, book, report) and collection of templates (blog, static web site, awestruct, training, documentation = collection of modules, … ) to boost process to develop documentation, training content (reason why hyla will assist you to create from a Table of content the structure of directories + asciidoc files (a file = a chapter =a module)), blog web, book, articles, static web site site … without the need to install git projects (everything is packaged in one tool like jekyll).
+
+More info about the project can be find here : 
+
+* [Hyla](https://github.com/cmoulliard/hyla)
+* [Docker Image - Hyla & Ruby](https://github.com/cmoulliard/hyla-docker-image#technical-writer)
 
 # Technical Writer
 
