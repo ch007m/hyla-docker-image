@@ -28,7 +28,7 @@ RUN yum -y install \
     readline-devel \
     zlib-devel     \
     gdbm-devel     \
-    ncurses-devel
+    ncurses-devel  \
     && yum clean all
 
 #
@@ -64,7 +64,9 @@ ENV HOME          /home/default
 ENV RBENV         $HOME/.rbenv 
 ENV PATH          $RBENV/bin:$PATH
 ENV RUBY_VERSION  1.9.3-p484
-ENV PATH          $RBENV/versions/$RUBY_VERSION/bin:$PATH
+ENV GEM_HOME      $HOME/.gem
+ENV GEM_PATH      $HOME/.gem
+ENV PATH          $HOME/.gem/bin:$RBENV/versions/$RUBY_VERSION/bin:$PATH
 
 RUN mkdir -p ~/.rbenv/plugins/;                                                          \
     git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build; \
@@ -77,20 +79,24 @@ RUN mkdir -p ~/.rbenv/plugins/;                                                 
 RUN gem install bundler pry --no-rdoc --no-ri
 
 #
+# Update Rubygems
+#
+RUN gem update --system --no-rdoc --no-ri
+
+#
 # Install Hyla gtom Gem Repo
 #
-RUN gem install hyla -v 1.0.6 --no-rdoc --no-ri
+# RUN gem install hyla -v 1.0.6 --no-rdoc --no-ri
 
 # 
 # ISSUE : GEM is not deployed
 # Git clone Hyla project, unzip the file, build the gem & install it
 #
-#RUN  mkdir -p /home/default/tmp; \
-#     curl -sf -o /home/default/tmp/hyla-master.zip -L https://github.com/cmoulliard/hyla/archive/master.zip; \
-#     cd /home/default/tmp/;            \
-#     unzip hyla-master.zip;            \
-#     cd /home/default/tmp/hyla-master; \                             \
-#     ls -la /home/default/data;        \
-#     gem build hyla.gemspec;           \
-#     ruby -e "Dir.glob('*.gem').each {|i| puts exec(\"gem install #{i} --no-rdoc --no-ri\")}"
+RUN  mkdir -p /home/default/tmp; \
+     curl -sf -o /home/default/tmp/hyla-master.zip -L https://github.com/cmoulliard/hyla/archive/master.zip; \
+     cd /home/default/tmp/;            \
+     unzip hyla-master.zip;            \
+     cd /home/default/tmp/hyla-master; \                       
+     gem build hyla.gemspec;           \
+     ruby -e "Dir.glob('*.gem').each {|i| puts exec(\"gem install #{i} --no-rdoc --no-ri\")}"
 
