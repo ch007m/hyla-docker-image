@@ -83,20 +83,12 @@ RUN gem install bundler pry --no-rdoc --no-ri
 #
 RUN gem update --system --no-rdoc --no-ri
 
-#
-# Install Hyla gtom Gem Repo
-#
-# RUN gem install hyla -v 1.0.6 --no-rdoc --no-ri
-
 # 
-# ISSUE : GEM is not deployed
 # Git clone Hyla project, unzip the file, build the gem & install it
 #
-RUN  mkdir -p /home/default/tmp; \
-     curl -sf -o /home/default/tmp/hyla-master.zip -L https://github.com/cmoulliard/hyla/archive/master.zip; \
-     cd /home/default/tmp/;            \
-     unzip hyla-master.zip;            \
-     cd /home/default/tmp/hyla-master; \                       
-     gem build hyla.gemspec;           \
+RUN  mkdir -p /home/default/tmp;                       \
+     git clone https://github.com/cmoulliard/hyla.git; \
+     cd /home/default/tmp/hyla;                        \
+     gem build hyla.gemspec;                           \
      ruby -e "Dir.glob('*.gem').each {|i| puts exec(\"gem install #{i} --no-rdoc --no-ri\")}"
 
