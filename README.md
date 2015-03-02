@@ -67,6 +67,6 @@ Remark : The location of the styles can change according to the version of hyla 
 
 If you would like to change the content definition of this image and generates a new docker image, here is the command to be used
 
-    docker build -rm -t your-username/your-project .
+    docker build --rm -t your-username/your-project .
 
 Remark : Do not forget to fork the project in that case.
