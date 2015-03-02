@@ -3,7 +3,6 @@
 # Provides an environment for running Hyla Ruby command line tool.
 # 
 
-
 #
 FROM       fedora:21
 MAINTAINER Charles Moulliard <ch007m@gmail.com>
@@ -29,6 +28,8 @@ RUN yum -y install \
     zlib-devel     \
     gdbm-devel     \
     ncurses-devel  \
+    pwgen          \
+    sudo           \
     && yum clean all
 
 #
@@ -37,7 +38,13 @@ RUN yum -y install \
 # so there is a high chance that this ID will be equal to the current user
 # making it easier to use volumes (no permission issues)
 #
-RUN groupadd -r default -g 1000 && useradd -u 1000 -r -g default -m -d /home/default -s /sbin/nologin -c "Default user" default    
+RUN groupadd -r default -g 1000 && useradd -u 1000 -r -g default -m -d /home/default -s /sbin/nologin -c "Default user" default   
+
+#
+# Add user to sudo
+#
+RUN echo 'default:secret' | chpasswd
+RUN echo '%default ALL=(ALL) ALL' >> /etc/sudoers
 
 # Set the working directory to default' user home directory
 WORKDIR /home/default
@@ -87,8 +94,8 @@ RUN gem update --system --no-rdoc --no-ri
 # Git clone Hyla project, unzip the file, build the gem & install it
 #
 RUN  mkdir -p /home/default/tmp;                       \
-     git clone https://github.com/cmoulliard/hyla.git; \
+     git clone https://github.com/cmoulliard/hyla.git /home/default/tmp/hyla; \
      cd /home/default/tmp/hyla;                        \
      gem build hyla.gemspec;                           \
-     ruby -e "Dir.glob('*.gem').each {|i| puts exec(\"gem install #{i} --no-rdoc --no-ri\")}"
+     ruby -e "Dir.glob('*.gem').each {|i| puts exec(\"gem install #{i} --no-rdoc --no-ri\")}"  
 
