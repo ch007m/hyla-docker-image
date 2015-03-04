@@ -29,6 +29,9 @@ RUN yum -y install \
     zlib-devel     \
     gdbm-devel     \
     ncurses-devel  \
+    pwgen          \
+    sudo           \
+    net-tools      \
     && yum clean all
 
 #
@@ -37,7 +40,13 @@ RUN yum -y install \
 # so there is a high chance that this ID will be equal to the current user
 # making it easier to use volumes (no permission issues)
 #
-RUN groupadd -r default -g 1000 && useradd -u 1000 -r -g default -m -d /home/default -s /sbin/nologin -c "Default user" default    
+RUN groupadd -r default -g 1000 && useradd -u 1000 -r -g default -m -d /home/default -s /sbin/nologin -c "Default user" default   
+
+#
+# Add user to sudo
+#
+RUN echo 'default:secret' | chpasswd
+RUN echo '%default ALL=(ALL) ALL' >> /etc/sudoers 
 
 # Set the working directory to default' user home directory
 WORKDIR /home/default
@@ -87,4 +96,7 @@ RUN gem update --system --no-rdoc --no-ri
 # Install Hyla gtom Gem Repo
 #
 RUN gem install hyla -v 1.0.6 --no-rdoc --no-ri
+
+# Expose PORT
+EXPOSE 7000
 
