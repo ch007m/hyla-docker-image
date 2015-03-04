@@ -30,6 +30,7 @@ RUN yum -y install \
     ncurses-devel  \
     pwgen          \
     sudo           \
+    net-tools      \
     && yum clean all
 
 #
@@ -98,4 +99,9 @@ RUN  mkdir -p /home/default/tmp;                       \
      cd /home/default/tmp/hyla;                        \
      gem build hyla.gemspec;                           \
      ruby -e "Dir.glob('*.gem').each {|i| puts exec(\"gem install #{i} --no-rdoc --no-ri\")}"  
+
+# 
+# Expose PORT for HTTP Access
+#
+expose 7000     
 
