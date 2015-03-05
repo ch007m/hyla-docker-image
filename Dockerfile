@@ -95,7 +95,7 @@ RUN gem update --system --no-rdoc --no-ri
 #
 # Install Hyla gtom Gem Repo
 #
-RUN gem install hyla -v 1.0.6 --no-rdoc --no-ri
+RUN gem install hyla -v 1.0.7.pre.1 --no-rdoc --no-ri
 
 # Expose PORT
 EXPOSE 7000
