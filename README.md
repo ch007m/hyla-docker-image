@@ -39,11 +39,11 @@ More info about the project can be find here :
 
 What you should do to use the __hyla ruby__ command line tool consists in starting a Docker container and pass as paramzter the bash function. That will tell to Docker to book a container created from the image definition and when the contaienr is started, a bash terminal will be launched. So run this command.
 
-    docker run -t -i -p 7000:7000 cmoulliard/hyla-ruby bash   
+    docker run -t -i -p 7000:7000 cmoulliard/hyla-docker-image bash   
 
 To mount the directory containing your project, use the -v option. The first part of the value is your local path while the second (placed after the : character) is where it will be mounted into the Docker container.
 
-    docker run -t -i -p 7000:7000 -v /path/on/your/machine/to/the/content:/home/default/content cmoulliard/hyla-ruby bash    
+    docker run -t -i -p 7000:7000 -v /path/on/your/machine/to/the/content:/home/default/content cmoulliard/hyla-docker-image bash    
 
 When the bash prompt appears, you can run the hyla command to render the content of the folder mounted
 
